@@ -253,13 +253,13 @@ def write_file(file_nm, initial, goal, result):
 
 
 def main():
-    # ask user for file name
-    input_file = input("Enter a file name: ")
+    # ask user for file names for input and output
+    input_file = input("Enter a file name as input: ")
+    output_file = input("File name to write the result to: ")
     # retrieve the initial and goal states from reading the file
     initial_state, goal_state = read_file(input_file)
     initial_state.fn = initial_state.heuristic(goal_state)
     result = search(initial_state, goal_state)
-    out_name = "Out" + input_file[2:]
-    write_file(out_name, initial_state, goal_state, result)
+    write_file(output_file, initial_state, goal_state, result)
 
 main()
