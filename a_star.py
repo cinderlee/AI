@@ -57,17 +57,27 @@ class TileBoard():
                 return True
         return False
 
+# making the up, down, left, right move 
+# returns whether or not the node was generated
 def make_move(tile, explored, frontier):
+	# check if tile is already explored
 	if not tile.is_explored(explored):
 	    seen = False
+	    # check if tile is in frontier
 	    for gen in frontier:
+	    	# if tile in frontier
 	        if gen.board == tile.board:
+	        	# check whether current cost is less
+	        	# than cost of node in frontier
+	        	# if so, update the fn and path
+	        	# heapify heap again to reorder the heap correctly
 	            if tile.fn < gen.fn:
 	                gen.fn = tile.fn
 	                gen.path = tile.path
 	                seen = True
 	                heapq.heapify(frontier)
 	                break
+	    # if tile not in frontier, push node
 	    if not seen:
 	        heapq.heappush(frontier, tile)
 	        return True
@@ -103,38 +113,62 @@ def search(initial, goal):
 
         # if left position of next blank space is valid
         if left[1] != -1: 
+        	# make copy of board
+        	# make the left swap
             board = copy.deepcopy(node.board)
             board[left[0]][left[1]], board[left[0]][left[1] + 1] = board[left[0]][left[1] + 1], board[left[0]][left[1]]
+            # create the Tile Board node for the left swap 
+            # append left to path 
+            # calculate fn
             left_tile = TileBoard(board, left)
             left_tile.path = node.path + ["L"]
             left_tile.fn = len(left_tile.path) + left_tile.heuristic(goal)
+            # check whether node was generated 
             if make_move(left_tile, explored, frontier):
                 generated += 1
         # if right position of next blank space is valid
         if right[1] != 3: 
+        	# make copy of board
+        	# make the right swap
             board = copy.deepcopy(node.board)
             board[right[0]][right[1]], board[right[0]][right[1] - 1] = board[right[0]][right[1] - 1], board[right[0]][right[1]]
+            # create the Tile Board node for the right swap 
+            # append right to path 
+            # calculate fn
             right_tile = TileBoard(board, right)
             right_tile.path = node.path + ["R"]
             right_tile.fn = len(right_tile.path) + right_tile.heuristic(goal)
+            # check whether node was generated 
             if make_move(right_tile, explored, frontier):
                 generated += 1
         # if up position of next blank space is valid
         if up[0] != -1:
+        	# make copy of board
+        	# make the up swap
             board = copy.deepcopy(node.board)
             board[up[0]][up[1]], board[up[0] + 1][up[1]] = board[up[0] + 1][up[1]], board[up[0]][up[1]]
+            # create the Tile Board node for the up swap 
+            # append up to path 
+            # calculate fn
             up_tile = TileBoard(board, up)
             up_tile.path = node.path + ["U"]
             up_tile.fn = len(up_tile.path) + up_tile.heuristic(goal)
+            # check whether node was generated 
             if make_move(up_tile, explored, frontier):
                 generated += 1
         # if down position of next blank space is valid
-        if down[0] != 3: 
+        if down[0] != 3:
+        	# make copy of board
+        	# make the down swap
             board = copy.deepcopy(node.board)
             board[down[0]][down[1]], board[down[0] - 1][up[1]] = board[down[0] - 1][down[1]], board[down[0]][down[1]]
+            # create the Tile Board node for the down swap 
+            # append down to path 
+            # calculate fn
             down_tile = TileBoard(board, down)
             down_tile.path = node.path + ["D"]
             down_tile.fn = len(down_tile.path) + down_tile.heuristic(goal)
+            # check whether node was generated 
             if make_move(down_tile, explored, frontier):
                 generated += 1
 
