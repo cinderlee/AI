@@ -245,7 +245,7 @@ def write_file(file_nm, initial, goal, result):
     else:
         out_file.write(str(len(node.path)) + "\n")
         out_file.write(str(generated) + "\n")
-        out_file.write(" ".join(node.path) + "\n")
+        out_file.write(" ".join(node.path))
     out_file.close()
 
 
