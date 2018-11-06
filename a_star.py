@@ -1,7 +1,7 @@
 import heapq
 import copy
 
-
+# Tile Board class
 class TileBoard():
     def __init__(self, board, pos):
         self.board = board
@@ -9,6 +9,7 @@ class TileBoard():
         self.fn = 0
         self.path = []
 
+    # string representation of board
     def __str__(self):
         string = ""
         for row in range(0, 3):
@@ -20,11 +21,14 @@ class TileBoard():
             string += "\n"
         return string
 
+    # less than function for heap comparisons
     def __lt__(self, other):
         return self.fn <= other.fn
 
+    # Manhattan distance 
     def heuristic(self, goal_state):
         goal = dict()
+        # create a dictionary of goal elements to tuple (x,y) location
         for row in range(0, 3):
             for col in range(0, 3):
                 if goal_state.board[row][col] != 0:
@@ -38,14 +42,32 @@ class TileBoard():
                     total += abs(row_other - x) + abs(col_other - y)
         return total
 
+    # check if state is goal state
     def is_goal(self, goal_state):
         return self.board == goal_state.board
 
+    # check if state is already explored
     def is_explored(self, explored):
         for node in explored:
             if node.board == self.board:
                 return True
         return False
+
+def make_move(tile, explored, frontier):
+	if not tile.is_explored(explored):
+	    seen = False
+	    for gen in frontier:
+	        if gen.board == tile.board:
+	            if tile.fn < gen.fn:
+	                gen.fn = tile.fn
+	                gen.path = tile.path
+	                seen = True
+	                heapq.heapify(frontier)
+	                break
+	    if not seen:
+	        heapq.heappush(frontier, tile)
+	        return True
+	return False
 
 def search(initial, goal):
     frontier = [initial]
@@ -66,82 +88,42 @@ def search(initial, goal):
             board = copy.deepcopy(node.board)
             board[left[0]][left[1]], board[left[0]][left[1] + 1] = board[left[0]][left[1] + 1], board[left[0]][left[1]]
             left_tile = TileBoard(board, left)
-            if not left_tile.is_explored(explored):
-                left_move = node.path + ["L"]
-                f_n = len(left_move) + left_tile.heuristic(goal)
-                seen = False
-                for gen in frontier:
-                    if gen.board == board:
-                        if f_n < gen.fn:
-                            gen.fn = f_n
-                            gen.path = left_move
-                            seen = True
-                            heapq.heapify(frontier)
-                            break
-                if not seen:
-                    left_tile.fn = f_n
-                    left_tile.path = left_move
-                    heapq.heappush(frontier, left_tile)
-                    generated += 1
+            left_move = node.path + ["L"]
+            f_n = len(left_move) + left_tile.heuristic(goal)
+            left_tile.fn = f_n
+            left_tile.path = left_move
+            if make_move(left_tile, explored, frontier):
+                generated += 1
         if right[1] != 3: 
             board = copy.deepcopy(node.board)
             board[right[0]][right[1]], board[right[0]][right[1] - 1] = board[right[0]][right[1] - 1], board[right[0]][right[1]]
             right_tile = TileBoard(board, right)
-            if not right_tile.is_explored(explored):
-                right_move = node.path + ["R"]
-                f_n = len(right_move) + right_tile.heuristic(goal)
-                seen = False
-                for gen in frontier:
-                    if gen.board == board:
-                        if f_n < gen.fn:
-                            gen.fn = f_n
-                            gen.path = right_move
-                            seen = True
-                            heapq.heapify(frontier)
-                            break
-                if not seen:
-                    right_tile.fn = f_n
-                    right_tile.path = right_move
-                    heapq.heappush(frontier, right_tile)
-                    generated += 1
+            right_move = node.path + ["R"]
+            f_n = len(right_move) + right_tile.heuristic(goal)
+            right_tile.fn = f_n
+            right_tile.path = right_move
+            if make_move(right_tile, explored, frontier):
+                generated += 1
         if up[0] != -1:
             board = copy.deepcopy(node.board)
             board[up[0]][up[1]], board[up[0] + 1][up[1]] = board[up[0] + 1][up[1]], board[up[0]][up[1]]
             up_tile = TileBoard(board, up)
-            if not up_tile.is_explored(explored):
-                up_move = node.path + ["U"]
-                f_n = len(up_move) + up_tile.heuristic(goal)
-                seen = False
-                for gen in frontier:
-                    if gen.board == board:
-                        if f_n < gen.fn:
-                            gen.fn = f_n
-                            gen.path = up_move
-                            seen = True
-                            heapq.heapify(frontier)
-                            break
-                if not seen:
-                    up_tile.fn = f_n
-                    up_tile.path = up_move
-                    heapq.heappush(frontier, up_tile)
-                    generated += 1
+            up_move = node.path + ["U"]
+            f_n = len(up_move) + up_tile.heuristic(goal)
+            up_tile.fn = f_n
+            up_tile.path = up_move
+            if make_move(up_tile, explored, frontier):
+                generated += 1
         if down[0] != 3: 
             board = copy.deepcopy(node.board)
             board[down[0]][down[1]], board[down[0] - 1][up[1]] = board[down[0] - 1][down[1]], board[down[0]][down[1]]
             down_tile = TileBoard(board, down)
-            if not down_tile.is_explored(explored):
-                down_move = node.path + ["D"]
-                f_n = len(down_move) + down_tile.heuristic(goal)
-                seen = False
-                for gen in frontier:
-                    if gen.board == board:
-                        seen = True
-                        break
-                if not seen:
-                    down_tile.fn = f_n
-                    down_tile.path = down_move
-                    heapq.heappush(frontier, down_tile)
-                    generated += 1
+            down_move = node.path + ["D"]
+            f_n = len(down_move) + down_tile.heuristic(goal)
+            down_tile.fn = f_n
+            down_tile.path = down_move
+            if make_move(down_tile, explored, frontier):
+                generated += 1
 
 def main():
     input_file = input("Enter a file name: ")
