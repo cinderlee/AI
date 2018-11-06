@@ -1,6 +1,7 @@
 import heapq
 import copy
 
+
 # Tile Board class
 # takes in a board and position of the blank space in board
 class TileBoard():
@@ -58,6 +59,7 @@ class TileBoard():
                 return True
         return False
 
+
 # making the up, down, left, right move 
 # returns whether or not the node was generated
 def make_move(tile, explored, frontier):
@@ -84,6 +86,8 @@ def make_move(tile, explored, frontier):
             return True
     return False
 
+
+# perform A* search
 def search(initial, goal):
     # initilize frontier to have initial state
     # generated = 1 to include root node
@@ -173,6 +177,8 @@ def search(initial, goal):
             if make_move(down_tile, explored, frontier):
                 generated += 1
 
+
+# read the input file
 def read_file(file_nm):
     file = None
     # attempt to open file
@@ -219,6 +225,7 @@ def read_file(file_nm):
     # return initial and goal states
     return initial_state, goal_state
 
+
 # write the output file 
 def write_file(file_nm, initial, goal, result):
     # separate the results into node returned and generated 
@@ -240,6 +247,7 @@ def write_file(file_nm, initial, goal, result):
         out_file.write(str(generated) + "\n")
         out_file.write(" ".join(node.path) + "\n")
     out_file.close()
+
 
 def main():
     # ask user for file name
