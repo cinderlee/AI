@@ -35,13 +35,8 @@ class NeuralNetwork:
         self.output_weight += np.dot(self.alpha, np.dot(self.hidden_layer.T, delta_i))
 
         deriv_hid = self.sigmoid_deriv(self.hid_val)[0]
-        delta_j_lst = []
-        for j in range(self.num_hidden):
-            total = 0
-            weight_j_i = self.output_weight[j]
-            for i in range(5):
-                total += weight_j_i[i] * delta_i[0][i]
-            delta_j_lst.append(total)
+
+        delta_j_lst = np.dot(self.output_weight, delta_i.T).reshape(1,50)[0]
 
         for del_j in range(self.num_hidden):
             delta_j_lst[del_j] *= deriv_hid[del_j]
@@ -103,7 +98,7 @@ def main():
     test_label.close()
 
     confusion_matrix = [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
-    for times in range(1000):
+    for times in range(100):
     	# get the image 
         pixel = pixel_lst[times]
         # get the train label
@@ -122,7 +117,7 @@ def main():
     accuracy = 0
     for i in range(5):
     	accuracy += confusion_matrix[i][i]
-    accuracy /= 1000
+    accuracy /= 100
     print(accuracy)
 
 main()
