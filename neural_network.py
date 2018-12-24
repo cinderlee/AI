@@ -167,8 +167,9 @@ class NeuralNetwork:
             # calculate the difference of the mse from last epoch to this one
             mse_diff = abs(mean_square_error - prev_mse)
             # print epoch num, correctly identified images, mse, and mse difference
-            print ("Epoch " + str(epoch_num)+ ": "+ str(correct)+' / ' + str(len(self.test_data)) + '   ' + str(mean_square_error)+'   ' \
-                           + str(mse_diff))
+            print ("Epoch " + str(epoch_num)+ ": "+ str(correct)+' / ' +
+            	   str(len(self.test_data)) + '\t\t' + str(mean_square_error) + 
+            	   '\t\t' + str(mse_diff))
             # if the mean square difference is < 0.0001, end the training
             if mse_diff < 0.0001:
                 return results
@@ -268,36 +269,42 @@ def main():
                         [0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0]]
 
-    # input the train data, test data,
-    # number of hidden nodes, and learning rate into the network
-    print ("Epochs                 MSE            MSE Difference")
-    neural = NeuralNetwork(train_data, test_data, 100, 0.05)
-    accuracy = 0
+    # list of amount of hidden nodes
+    # loop through each and create neural network of each
+    hidden_nodes = [50, 100, 300]
+    for hid in hidden_nodes:
+    	print("Number of hidden nodes: " + str(hid))
+	    print ("Epochs\t\t\t\tMSE\t\t\t\tMSE Difference")
+	    # input the train data, test data,
+        # number of hidden nodes, and learning rate into the network
+	    neural = NeuralNetwork(train_data, test_data, hid, 0.05)
+	    accuracy = 0
 
-    # test the neural network and obtain the results
-    results = neural.test_accuracy()
-    # loop through the results
-    # get the index of the max number in the output result and test label
+	    # test the neural network and obtain the results
+	    results = neural.test_accuracy()
+	    # loop through the results
+	    # get the index of the max number in the output result and test label
 
-    for output, test_lbl in results:
-    	out_index = np.argmax(output)
-    	lbl_index = np.argmax(test_lbl)
-    	# add 1 to the confusion matrix for the corresponding indices
-    	confusion_matrix[lbl_index][out_index] += 1
+	    for output, test_lbl in results:
+	    	out_index = np.argmax(output)
+	    	lbl_index = np.argmax(test_lbl)
+	    	# add 1 to the confusion matrix for the corresponding indices
+	    	confusion_matrix[lbl_index][out_index] += 1
 
-    	# if indices match, add 1 to accuracy
-    	if out_index == lbl_index:
-    		accuracy += 1
+	    	# if indices match, add 1 to accuracy
+	    	if out_index == lbl_index:
+	    		accuracy += 1
 
-    # print the confusion matrix
-    print()
-    print_confusion(confusion_matrix)
+	    # print the confusion matrix
+	    print()
+	    print_confusion(confusion_matrix)
 
-    # divide by 2561, number of test images
-    # and multiply by 100 for percent accuracy
-    print()
-    accuracy = accuracy / len(test_data) * 100
-    print("Accuracy: " + str(accuracy) + "%")
+	    # divide by 2561, number of test images
+	    # and multiply by 100 for percent accuracy
+	    print()
+	    accuracy = accuracy / len(test_data) * 100
+	    print("Accuracy: " + str(accuracy) + "%")
+	    print()
 
 
 main()
