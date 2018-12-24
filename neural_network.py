@@ -263,16 +263,15 @@ def main():
     train_data = list(zip(train_pixel_lst, train_label_lst))
     test_data = list(zip(test_pixel_lst, test_label_lst))
 
-    confusion_matrix = [[0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0],
-                        [0, 0, 0, 0, 0]]
-
     # list of amount of hidden nodes
     # loop through each and create neural network of each
     hidden_nodes = [50, 100, 300]
     for hid in hidden_nodes:
+    	confusion_matrix = [[0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0],
+                            [0, 0, 0, 0, 0]]
     	print("Number of hidden nodes: " + str(hid))
 	    print ("Epochs\t\t\t\tMSE\t\t\t\tMSE Difference")
 	    # input the train data, test data,
