@@ -125,8 +125,6 @@ class NeuralNetwork:
         # for each difference, add the square of it to the total
         for err in delta_err:
             err_total += err ** 2
-        # divide the error total by len (mean of sq errors)
-        #err_total /= 2
         return err_total
 
     def testing(self):
