@@ -17,16 +17,16 @@ class NeuralNetwork:
         self.batch_size = 100
 
     def sigmoid(self, x):
-    	# sigmoid function of x
+        # sigmoid function of x
         return 1.0 / (1.0 + np.exp(-x))
 
     def sigmoid_deriv(self, x):
-    	# sigmoid derivative of x
+        # sigmoid derivative of x
         return x * (1 - x)
 
     def feed_forward(self, input):
-    	# feeding forward an input 
-    	# first calculate Wk,j * ak + bias for hidden nodes
+        # feeding forward an input 
+        # first calculate Wk,j * ak + bias for hidden nodes
         hid_val = np.dot(input, self.hidden_weight) + self.hidden_bias
         # sigmoid the values of the hidden nodes
         hidden_layer = self.sigmoid(hid_val)
@@ -38,7 +38,7 @@ class NeuralNetwork:
         return (hidden_layer, output_layer)
 
     def back_propagate(self, input, label, hidden_layer, output_layer):
-    	# calculate y - o where y = label
+        # calculate y - o where y = label
         delta_err = (label - output_layer)[0]
         # calculate derivative of the activation of the output nodes
         deriv_out = (self.sigmoid_deriv(output_layer))[0]
@@ -70,7 +70,7 @@ class NeuralNetwork:
         return [h_weight, h_bias], [o_weight, o_bias]
 
     def mini_batches(self):
-    	# shuffle the training data
+        # shuffle the training data
         random.shuffle(self.train_data)
         batches = []
         batch_start = 0
@@ -81,15 +81,15 @@ class NeuralNetwork:
         return batches
 
     def training(self):
-    	# training uses stochastic gradient descent!
-    	# make a list of the mini batches
+        # training uses stochastic gradient descent!
+        # make a list of the mini batches
         batches = self.mini_batches()
         # for each batch 
         for batch in batches:
-        	# store the changes need to be made
-        	# hidden_w_del = hidden weights delta change
-        	# hidden_b_del = hidden bias delta change
-        	# same applies for the output layer
+            # store the changes need to be made
+            # hidden_w_del = hidden weights delta change
+            # hidden_b_del = hidden bias delta change
+            # same applies for the output layer
             hidden_w_del = np.zeros(self.hidden_weight.shape)
             hidden_b_del = np.zeros(self.hidden_bias.shape)
             output_w_del = np.zeros(self.output_weight.shape)
@@ -97,7 +97,7 @@ class NeuralNetwork:
             # inside each batch is a training data: 
             # (training image, training label)
             for single in batch:
-            	# feed forward on the training image
+                # feed forward on the training image
                 hidden_layer, output_layer = self.feed_forward(single[0])
                 # back propagate using the image, label and the resulting 
                 # activated layers
@@ -118,8 +118,8 @@ class NeuralNetwork:
             self.output_bias += np.dot(1 / self.batch_size, output_b_del)
 
     def squared_error(self, res, lbl):
-    	# res = output result, lbl = label
-    	# take the difference of result - label
+        # res = output result, lbl = label
+        # take the difference of result - label
         delta_err = (res - lbl)[0]
         err_total = 0
         # for each difference, add the square of it to the total
@@ -128,19 +128,19 @@ class NeuralNetwork:
         return err_total
 
     def testing(self):
-    	# list to store the results of feeding forward test data
+        # list to store the results of feeding forward test data
         results = []
         for test_pix, test_lbl in self.test_data:
-        	# append (result, label)
-        	# feed_forward returns hidden layer and output layer
-        	# result is output layer hence [-1]
+            # append (result, label)
+            # feed_forward returns hidden layer and output layer
+            # result is output layer hence [-1]
             results.append((self.feed_forward(test_pix)[-1], test_lbl))
         
         correct = 0 
         # loop through the results and count how many are correctly predicted
         for vals in results:
-        	# argmax returns the index of the max value
-        	# check if argmax of output = argmax of label
+            # argmax returns the index of the max value
+            # check if argmax of output = argmax of label
             if np.argmax(vals[0]) == np.argmax(vals[1]):
                 correct += 1
 
@@ -159,7 +159,7 @@ class NeuralNetwork:
         prev_mse = 0
         mse_diff = 0
         while True:
-        	# train the network using the train images and labels
+            # train the network using the train images and labels
             self.training()
             # test network using the test images and labels
             # retrieve the correct count, mse, and results 
@@ -168,8 +168,8 @@ class NeuralNetwork:
             mse_diff = abs(mean_square_error - prev_mse)
             # print epoch num, correctly identified images, mse, and mse difference
             print ("Epoch " + str(epoch_num)+ ": "+ str(correct)+' / ' +
-            	   str(len(self.test_data)) + '\t\t' + str(mean_square_error) + 
-            	   '\t\t' + str(mse_diff))
+                   str(len(self.test_data)) + '\t\t' + str(mean_square_error) + 
+                   '\t\t' + str(mse_diff))
             # if the mean square difference is < 0.0001, end the training
             if mse_diff < 0.0001:
                 return results
@@ -180,7 +180,7 @@ class NeuralNetwork:
 
 
 def open_raw(raw_name):
-	# open raw file with raw_name
+    # open raw file with raw_name
     file = open(raw_name, "rb")
     byte_file = file.read()
     file.close()
@@ -190,8 +190,8 @@ def open_raw(raw_name):
     lst = []
     # loop through the bytes in the file
     for byte in byte_file:
-    	# to a sublist, append byte / 255 to prevent overflow
-    	# error when doing sigmoid later
+        # to a sublist, append byte / 255 to prevent overflow
+        # error when doing sigmoid later
         lst.append(byte / 255)
         count += 1
         # once hit the 784 counter
@@ -205,12 +205,12 @@ def open_raw(raw_name):
 
 
 def open_label(label_name):
-	# Opens the label file with label_name
+    # Opens the label file with label_name
     label = open(label_name)
     label_lst = []
     for line in label:
-    	# for each label, strip off the \n character
-    	# turn the label into a list of numbers
+        # for each label, strip off the \n character
+        # turn the label into a list of numbers
         line = line.strip().split(" ")
         for num in range(0, len(line)):
             line[num] = int(line[num])
@@ -223,32 +223,32 @@ def open_label(label_name):
 
 
 def print_confusion(confusion_matrix):
-	# prints the confusion matrix nicely
-	print("Confusion Matrix: ")
-	max_string = 0
-	# find the max value in the confusion matrix
-	# this would be our reference for spacing 
-	for row in confusion_matrix:
-		max_num = max(row)
-		if max_string < max_num:
-			max_string = max_num
-	# max string is the length of the max num
-	max_string = len(str(max_string))
-	confusion_string = " " * max_string + "\t"
-	# creating the first table row 
-	for i in range(5):
-		confusion_string += str(i) + " " * (max_string - 1) + "\t"
-	# loop through the confusion matrix and form the rows
-	for j in range(5):
-		confusion_string += "\n" + str(j) + " " * (max_string - 1) + "\t"
-		for row in confusion_matrix[j]:
-			num = str(row)
-			# number of spaces is len of max num - len of the number itself
-			# this fills up the spaces as if each num is same length
-			# as the max num 
-			spaces = " " * (max_string - len(num))
-			confusion_string += num + spaces + "\t"
-	print(confusion_string)
+    # prints the confusion matrix nicely
+    print("Confusion Matrix: ")
+    max_string = 0
+    # find the max value in the confusion matrix
+    # this would be our reference for spacing 
+    for row in confusion_matrix:
+        max_num = max(row)
+        if max_string < max_num:
+            max_string = max_num
+    # max string is the length of the max num
+    max_string = len(str(max_string))
+    confusion_string = " " * max_string + "\t"
+    # creating the first table row 
+    for i in range(5):
+        confusion_string += str(i) + " " * (max_string - 1) + "\t"
+    # loop through the confusion matrix and form the rows
+    for j in range(5):
+        confusion_string += "\n" + str(j) + " " * (max_string - 1) + "\t"
+        for row in confusion_matrix[j]:
+            num = str(row)
+            # number of spaces is len of max num - len of the number itself
+            # this fills up the spaces as if each num is same length
+            # as the max num 
+            spaces = " " * (max_string - len(num))
+            confusion_string += num + spaces + "\t"
+    print(confusion_string)
 
 
 def main():
@@ -267,43 +267,43 @@ def main():
     # loop through each and create neural network of each
     hidden_nodes = [50, 100, 300]
     for hid in hidden_nodes:
-    	confusion_matrix = [[0, 0, 0, 0, 0],
+        confusion_matrix = [[0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0]]
-    	print("Number of hidden nodes: " + str(hid))
-	    print ("Epochs\t\t\t\tMSE\t\t\t\tMSE Difference")
-	    # input the train data, test data,
+        print("Number of hidden nodes: " + str(hid))
+        print ("Epochs\t\t\t\tMSE\t\t\t\tMSE Difference")
+        # input the train data, test data,
         # number of hidden nodes, and learning rate into the network
-	    neural = NeuralNetwork(train_data, test_data, hid, 0.05)
-	    accuracy = 0
+        neural = NeuralNetwork(train_data, test_data, hid, 0.05)
+        accuracy = 0
 
-	    # test the neural network and obtain the results
-	    results = neural.test_accuracy()
-	    # loop through the results
-	    # get the index of the max number in the output result and test label
+        # test the neural network and obtain the results
+        results = neural.test_accuracy()
+        # loop through the results
+        # get the index of the max number in the output result and test label
 
-	    for output, test_lbl in results:
-	    	out_index = np.argmax(output)
-	    	lbl_index = np.argmax(test_lbl)
-	    	# add 1 to the confusion matrix for the corresponding indices
-	    	confusion_matrix[lbl_index][out_index] += 1
+        for output, test_lbl in results:
+            out_index = np.argmax(output)
+            lbl_index = np.argmax(test_lbl)
+            # add 1 to the confusion matrix for the corresponding indices
+            confusion_matrix[lbl_index][out_index] += 1
 
-	    	# if indices match, add 1 to accuracy
-	    	if out_index == lbl_index:
-	    		accuracy += 1
+            # if indices match, add 1 to accuracy
+            if out_index == lbl_index:
+                accuracy += 1
 
-	    # print the confusion matrix
-	    print()
-	    print_confusion(confusion_matrix)
+        # print the confusion matrix
+        print()
+        print_confusion(confusion_matrix)
 
-	    # divide by 2561, number of test images
-	    # and multiply by 100 for percent accuracy
-	    print()
-	    accuracy = accuracy / len(test_data) * 100
-	    print("Accuracy: " + str(accuracy) + "%")
-	    print()
+        # divide by 2561, number of test images
+        # and multiply by 100 for percent accuracy
+        print()
+        accuracy = accuracy / len(test_data) * 100
+        print("Accuracy: " + str(accuracy) + "%")
+        print()
 
 
 main()
