@@ -3,9 +3,8 @@ import random
 
 
 class NeuralNetwork:
-    def __init__(self, train_data, test_data, num_hidden, learning_rate):
+    def __init__(self, train_data, num_hidden, learning_rate):
         self.train_data = train_data
-        self.test_data = test_data
         self.num_hidden = num_hidden
         # randomize the weights Wk,j and Wj,i matrices
         self.hidden_weight = np.random.randn(784, num_hidden)
@@ -127,14 +126,19 @@ class NeuralNetwork:
             err_total += err ** 2
         return err_total
 
-    def testing(self):
-        # list to store the results of feeding forward test data
+    def test_data(self, test_data):
+        # input test data of pixels and labels to test
         results = []
-        for train_pix, train_lbl in self.train_data:
+        for test_pix, test_lbl in test_data:
             # append (result, label)
             # feed_forward returns hidden layer and output layer
             # result is output layer hence [-1]
-            results.append((self.feed_forward(train_pix)[-1], train_lbl))
+            results.append((self.feed_forward(test_pix)[-1], test_lbl))
+        return results
+
+    def test_train(self):
+        # input the train data to test feed forwarding
+        results = self.test_data(self.train_data)
         
         correct = 0 
         # loop through the results and count how many are correctly predicted
@@ -163,7 +167,7 @@ class NeuralNetwork:
             self.training()
             # test network using the test images and labels
             # retrieve the correct count, mse, and results 
-            correct, mean_square_error, results = self.testing()
+            correct, mean_square_error, results = self.test_train()
             # calculate the difference of the mse from last epoch to this one
             mse_diff = abs(mean_square_error - prev_mse)
             # print epoch num, correctly identified images, mse, and mse difference
@@ -177,15 +181,6 @@ class NeuralNetwork:
             else:
                 prev_mse = mean_square_error
             epoch_num += 1
-
-    def test_accuracy(self):
-        results = []
-        for test_pix, test_lbl in self.test_data:
-            # append (result, label)
-            # feed_forward returns hidden layer and output layer
-            # result is output layer hence [-1]
-            results.append((self.feed_forward(test_pix)[-1], test_lbl))
-        return results
 
 
 def open_raw(raw_name):
@@ -285,12 +280,12 @@ def main():
         print ("Epochs\t\t\t\tMSE\t\t\t\tMSE Difference")
         # input the train data, test data,
         # number of hidden nodes, and learning rate into the network
-        neural = NeuralNetwork(train_data, test_data, hid, 0.05)
+        neural = NeuralNetwork(train_data, hid, 0.05)
         accuracy = 0
 
-        # test the neural network and obtain the results
+        # train, test the neural network and obtain the results
         neural.train_accuracy()
-        results = neural.test_accuracy()
+        results = neural.test_data(test_data)
         # loop through the results
         # get the index of the max number in the output result and test label
 
