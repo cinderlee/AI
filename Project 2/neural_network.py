@@ -1,3 +1,8 @@
+'''
+Cindy Lee
+Net Id: cl3616
+'''
+
 import numpy as np
 import random
 
@@ -172,7 +177,7 @@ class NeuralNetwork:
             mse_diff = abs(mean_square_error - prev_mse)
             # print epoch num, correctly identified images, mse, and mse difference
             print ("Epoch " + str(epoch_num)+ ": "+ str(correct)+' / ' +
-                   str(len(self.train_data)) + '\t\t' + str(mean_square_error) + 
+                   str(len(results)) + '\t\t' + str(mean_square_error) + 
                    '\t\t' + str(mse_diff))
             # if the mean square difference is < 0.0001, end the training
             if mse_diff < 0.0001:
