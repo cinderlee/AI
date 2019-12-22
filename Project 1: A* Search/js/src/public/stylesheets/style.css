@@ -1,0 +1,73 @@
+body{
+	text-align: center;
+}
+
+.game, .result, .reset, .error-message, .animate{
+	display: none;
+}
+
+.startBoard {
+	position: absolute;
+	left: 20%
+}
+
+.goalBoard{
+	position: absolute;
+	right: 20%
+}
+
+.animateBoard{
+	position:relative;
+}
+
+.solveBtn, .animateBtn{
+	position: absolute;
+	bottom: 20%;
+	left: 47.5%
+}
+
+.startBoard > div, .goalBoard > div{
+	display:inline-block;
+	width: 100px;
+	height: 100px;
+	border: 1px;
+	border-style: solid;
+	border-color: black;
+	font-size: 80px;
+	text-align: center;
+	vertical-align:middle;
+	position:relative;
+	top: 0px;
+	left: 0px;
+}
+
+.animateBoard > div{
+	display:inline-block;
+	width: 100px;
+	height: 100px;
+	border: 1px;
+	border-style: solid;
+	border-color: black;
+	font-size: 80px;
+	text-align: center;
+	vertical-align:middle;
+	position:absolute;
+	top: 0px;
+	left: 0px;
+}
+
+
+div > input {
+	width: 80px;
+	height: 80px;
+	font-size: 75px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+table{
+	position: relative;
+	left: 25%;
+	text-align: center;
+	width: 50%;
+}
