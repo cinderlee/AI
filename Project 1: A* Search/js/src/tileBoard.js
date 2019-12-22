@@ -1,23 +1,23 @@
 class TileBoard {
     constructor( board, pos ){
-        this.board = board 
-        this.pos = pos
-        this.fn = 0
-        this.path = []
+        this.board = board; 
+        this.pos = pos;
+        this.fn = 0;
+        this.path = [];
     }
 
     valueOf(){
-        return this.fn
+        return this.fn;
     }
 
     heuristic( goalState ){
-        const goal = {}
+        const goal = {};
 
         for( let row = 0; row < 3; row++ ){
             for( let col = 0; col < 3; col++ ){
                 if( goalState.board[ row ][ col ] !== 0 ){
-                    const number = goalState.board[ row ][ col ]
-                    goal[ number ] = [ row, col ]
+                    const number = goalState.board[ row ][ col ];
+                    goal[ number ] = [row, col];
                 }
             }
         }
@@ -27,18 +27,18 @@ class TileBoard {
         for( let rowOther = 0; rowOther < 3; rowOther++ ){
             for( let colOther = 0; colOther < 3; colOther++ ){
                 if( this.board[ rowOther ][ colOther ] !== 0 ){
-                    const num = this.board[ rowOther ][ colOther ]
-                    const [ x, y ] = [...goal[ num ]]
-                    total += Math.abs( rowOther - x ) + Math.abs( colOther - y )
+                    const num = this.board[ rowOther ][ colOther ];
+                    const [x, y] = [...goal[ num ]];
+                    total += Math.abs( rowOther - x ) + Math.abs( colOther - y );
                 }
             }
         }
 
-        return total
+        return total;
     }
 
     isGoal( goalState ){
-        return this.isEqual(goalState)
+        return this.isEqual(goalState);
     }
 
     isEqual(other){
@@ -49,13 +49,13 @@ class TileBoard {
                 }
             }
         }
-        return true
+        return true;
     }
 
     isExplored( explored ){
         for( const node of explored ){
             if( this.isEqual(node) ){
-                return true
+                return true;
             }
         }
         return false;

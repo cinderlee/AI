@@ -8,14 +8,14 @@ class Heap{
         while (index !== 0){
             let parentIndex;
             if (index % 2 === 0){
-                parentIndex = Math.floor((index - 2) / 2)
+                parentIndex = Math.floor((index - 2) / 2);
             }
             else{
-                parentIndex = Math.floor((index - 1) / 2)
+                parentIndex = Math.floor((index - 1) / 2);
             }
             if (this.heap[index] <= this.heap[parentIndex]){
-                const temp = this.heap[index]
-                this.heap[index] = this.heap[parentIndex]
+                const temp = this.heap[index];
+                this.heap[index] = this.heap[parentIndex];
                 this.heap[parentIndex] = temp;
                 index = parentIndex;
             }
@@ -27,47 +27,46 @@ class Heap{
     
     bubbleDown(index){
         while (index < this.heap.length){
-            let childOne;
             let childTwo;
             let minChild;
 
             if (index * 2 + 1 < this.heap.length){
-                 minChild = index * 2 + 1
+                 minChild = index * 2 + 1;
             } else {
-                break 
+                break; 
             }
             if (index * 2 + 2 < this.heap.length){
-                childTwo = index * 2 + 2
+                childTwo = index * 2 + 2;
                 if (this.heap[childTwo] < this.heap[minChild]){
-                    minChild = childTwo
+                    minChild = childTwo;
                 }
             }
 
             if (this.heap[index] > this.heap[minChild]){
-                const temp = this.heap[index]
-                this.heap[index] = this.heap[minChild]
-                this.heap[minChild] = temp
+                const temp = this.heap[index];
+                this.heap[index] = this.heap[minChild];
+                this.heap[minChild] = temp;
                 index = minChild;
             }
             else{
-                break
+                break;
             }
         }
     }
 
     push(element){
-        this.heap.push(element)
-        let index = this.heap.length - 1;
+        this.heap.push(element);
+        const index = this.heap.length - 1;
         this.bubbleUp(index);
     }
 
-    pop(element){
+    pop(){
         const minimum = this.heap[0];
-        this.heap[0] = this.heap[this.heap.length - 1]
-        this.heap.pop()
-        this.bubbleDown(0)
+        this.heap[0] = this.heap[this.heap.length - 1];
+        this.heap.pop();
+        this.bubbleDown(0);
 
-        return minimum
+        return minimum;
     }
 
     heapify(){
@@ -77,7 +76,7 @@ class Heap{
     }
 
     *[Symbol.iterator]() {
-        for (let element of this.heap) {
+        for (const element of this.heap) {
             yield element;
         }
     }
