@@ -166,7 +166,6 @@ function fetchBoardValues(boardType){
 
 async function animateTiles(zeroId, otherId, direction){
     const zeroBox = document.getElementById(`animatebox${zeroId}`);
-    console.log(zeroBox)
     const otherBox = document.getElementById(`animatebox${otherId}`)
     let pos = 0;
     const id = setInterval(frame, 10);
@@ -211,17 +210,67 @@ async function animateTiles(zeroId, otherId, direction){
     }
 }
 
-function beDead(millisecondsToWait = 2000){
-    const now = new Date().getTime();
-    while (new Date().getTime() < now + millisecondsToWait){
-
-    }
-}
-
-async function animation(zeroId, path) {
+async function animationHandler(zeroId, path) {
     for (const element of path){
         await animateTiles(zeroId, ...element)
         zeroId = element[0]
+    }
+}
+
+
+function fetchPathCoords(startCoord, directions){
+    let [r, c] = [...startCoord];
+    const path = [];
+    for (const elem of directions){
+        if (elem === 'U'){
+            r--;
+        } else if(elem === 'D'){
+            r++;
+        } else if (elem === 'L'){
+            c--
+        } else{
+            c++;
+        }
+        const idNum = r * 3 + c;
+        path.push( [idNum, elem]);
+    }
+    return path;
+}
+
+function solveClickHandler(){
+    const error_div = document.querySelector('.error-message');
+    let startInfo = fetchBoardValues('start')
+    let goalInfo = fetchBoardValues('goal');
+    if (startInfo[0] === 'Empty cell detected.' || goalInfo[0] === 'Empty cell detected.'){
+        error_div.setAttribute('style', 'display:block');
+    }
+    else{
+        error_div.setAttribute('style', 'display:none');
+
+        const initial = new TileBoard(...startInfo);
+        const goal = new TileBoard(...goalInfo);
+        initial.fn = initial.heuristic(goal);
+
+        const result = search(initial, goal);
+        const startBoard = startInfo[0]
+        const path = fetchPathCoords(startInfo[1], result[0].path)
+        const animateBoard = document.querySelector('.animateBoard');
+        document.querySelector('.animate').setAttribute('style', 'display:inline')
+        document.querySelector('.start').setAttribute('style', 'display:none')
+        createBoard('animate', animateBoard)
+        for (let i = 0; i < 9; i++){
+            let rowVal = Math.floor(i / 3)
+            let colVal = i % 3
+            const containerVal = document.createTextNode(startBoard[rowVal][colVal]);
+            const container = document.querySelector(`#animatebox${i}`)
+            container.setAttribute('style', `top:${rowVal * 100}px;left:${(colVal * 100)}px`)
+            container.appendChild(containerVal)
+        }
+        
+        const animateButton = document.querySelector('.animate-btn');
+        const [startR, startC] = [...startInfo[1]]
+        let zeroId = startR * 3 + startC;
+        animateButton.addEventListener('click', () => animationHandler(zeroId, path))
     }
 }
 
@@ -233,63 +282,7 @@ function main() {
     createBoard('goal', goalBoard);
 
     const solveButton = document.querySelector('.play-btn');
-    solveButton.addEventListener('click', function() {
-        const error_div = document.querySelector('.error-message');
-        let startInfo = fetchBoardValues('start')
-        let goalInfo = fetchBoardValues('goal');
-        if (startInfo[0] === 'Empty cell detected.' || goalInfo[0] === 'Empty cell detected.'){
-            error_div.setAttribute('style', 'display:block');
-            console.log('blegh')
-        }
-        else{
-            error_div.setAttribute('style', 'display:none');
-
-            const initial = new TileBoard(...startInfo);
-            const goal = new TileBoard(...goalInfo);
-            initial.fn = initial.heuristic(goal);
-
-            const result = search(initial, goal);
-            const startBoard = startInfo[0]
-            let [r, c] = [...startInfo [1]]
-            const path = []
-            for (const elem of result[0].path){
-                if (elem === 'U'){
-                    r--;
-                }
-                else if(elem === 'D'){
-                    r++;
-                }
-                else if (elem === 'L'){
-                    c--
-                }
-                else{
-                    c++;
-                }
-                const idNum = r * 3 + c;
-                path.push( [idNum, elem]);
-            }
-            const animateBoard = document.querySelector('.animateBoard');
-            document.querySelector('.animate').setAttribute('style', 'display:inline')
-            document.querySelector('.start').setAttribute('style', 'display:none')
-            createBoard('animate', animateBoard)
-            for (let i = 0; i < 9; i++){
-                let rowVal = Math.floor(i / 3)
-                let colVal = i % 3
-                const containerVal = document.createTextNode(startBoard[rowVal][colVal]);
-                const container = document.querySelector(`#animatebox${i}`)
-                container.setAttribute('style', `top:${rowVal * 100}px;left:${(colVal * 100)}px`)
-                // container.setAttribute('style', `left:${(colVal * 100)}px`)
-                container.appendChild(containerVal)
-            }
-            
-            const animBtn = document.querySelector('.animate-btn');
-            const [startR, startC] = [...startInfo[1]]
-            let zeroId = startR * 3 + startC;
-            animBtn.addEventListener('click', () => animation(zeroId, path))
-
-        }
-    })
-
+    solveButton.addEventListener('click', solveClickHandler)
 }
 
 document.addEventListener('DOMContentLoaded', main);
