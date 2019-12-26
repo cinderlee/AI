@@ -1,10 +1,17 @@
 body{
 	font-family: 'Architects Daughter';
 	text-align: center;
+	background-color: #b3d9ff;
 }
 
-.game, .result, .reset, .error-message, .animate{
+.game, .reset, .error-message, .animate{
 	display: none;
+}
+
+.animate, .reset{
+	position: absolute;
+	left: 40%;
+	top: 20%;
 }
 
 .startBoard {
@@ -18,13 +25,19 @@ body{
 }
 
 .animateBoard{
-	position:relative;
+	position: relative;
 }
 
-.solveBtn, .animateBtn{
+.solveBtn{
 	position: absolute;
 	bottom: 20%;
-	left: 47.5%
+	left: 46%
+}
+
+.animateBtn, .resetBtn{
+	position: absolute;
+	left: 100px;
+	top: 400px;
 }
 
 .startBoard > div, .goalBoard > div{
@@ -62,7 +75,6 @@ div > input {
 	height: 80px;
 	font-family: 'Architects Daughter';
 	font-size: 75px;
-	/* vertical-align: middle; */
 	text-align: center;
 	position: relative;
 	top: 9px;
@@ -73,4 +85,12 @@ table{
 	left: 25%;
 	text-align: center;
 	width: 50%;
+}
+
+button{
+	padding: 10px; 
+	border-radius: 10px; 
+	font-size: 20px; 
+	background-color: #d1b3ff;
+	font-family: 'Architects Daughter'
 }

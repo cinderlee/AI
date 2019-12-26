@@ -167,6 +167,7 @@ function fetchBoardValues(boardType){
 async function animateTiles(zeroId, otherId, direction){
     const zeroBox = document.getElementById(`animatebox${zeroId}`);
     const otherBox = document.getElementById(`animatebox${otherId}`)
+    console.log(zeroId, otherId)
     let pos = 0;
     const id = setInterval(frame, 10);
     zeroBox.setAttribute('id',`animatebox${otherId}`)
@@ -211,12 +212,15 @@ async function animateTiles(zeroId, otherId, direction){
 }
 
 async function animationHandler(zeroId, path) {
+    const animateBtnContainer = document.querySelector('.animateBtn')
+    animateBtnContainer.setAttribute('style', 'display:none');
     for (const element of path){
         await animateTiles(zeroId, ...element)
         zeroId = element[0]
     }
+    const resetContainer = document.querySelector('.reset')
+    resetContainer.setAttribute('style', 'display:inline');
 }
-
 
 function fetchPathCoords(startCoord, directions){
     let [r, c] = [...startCoord];
@@ -267,11 +271,52 @@ function solveClickHandler(){
             container.appendChild(containerVal)
         }
         
-        const animateButton = document.querySelector('.animate-btn');
+        const animateButton = document.createElement('button')
+        animateButton.setAttribute('class', 'animate-btn')
+        const animateText = document.createTextNode('Animate!')
+        animateButton.appendChild(animateText)
+
+        const animateBtnContainer = document.querySelector('.animateBtn')
+        animateBtnContainer.appendChild(animateButton)
+        
         const [startR, startC] = [...startInfo[1]]
         let zeroId = startR * 3 + startC;
-        animateButton.addEventListener('click', () => animationHandler(zeroId, path))
+        animateButton.addEventListener('click', () => animationHandler(zeroId, path));
     }
+}
+
+function clearBoards(){
+    for (let count = 0; count < 9; count++){
+        const startInput = document.querySelector(`#startInput${count}`);
+        const goalInput = document.querySelector(`#goalInput${count}`);
+        startInput.value = '';
+        goalInput.value = '';
+
+        const animateBox = document.querySelector(`#animatebox${count}`)
+        animateBox.removeChild(animateBox.firstChild);
+    }
+
+    const animateBoard = document.querySelector('.animateBoard');
+    while (animateBoard.firstChild){
+        animateBoard.removeChild(animateBoard.firstChild)
+    }
+
+}
+
+function resetHandler(){
+    const animateContainer = document.querySelector('.animate')
+    animateContainer.setAttribute('style', 'display:none');
+    const animateBtnContainer = document.querySelector('.animateBtn')
+    animateBtnContainer.setAttribute('style', 'display:inline');
+    const animateButton = document.querySelector('.animate-btn');
+    animateBtnContainer.removeChild(animateButton)
+    
+    const resetContainer = document.querySelector('.reset')
+    resetContainer.setAttribute('style', 'display:none')
+
+   clearBoards();
+   const startContainer = document.querySelector('.start');
+   startContainer.setAttribute('style', 'display:inline');
 }
 
 function main() {
@@ -283,6 +328,9 @@ function main() {
 
     const solveButton = document.querySelector('.play-btn');
     solveButton.addEventListener('click', solveClickHandler)
+
+    const resetButton = document.querySelector('.reset-btn')
+    resetButton.addEventListener('click', resetHandler)
 }
 
 document.addEventListener('DOMContentLoaded', main);
