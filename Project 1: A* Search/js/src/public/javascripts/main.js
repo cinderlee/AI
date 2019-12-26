@@ -164,14 +164,37 @@ function fetchBoardValues(boardType){
     return [boardVals, zeroPos];
 }
 
-async function animateTiles(zeroId, otherId, direction){
+async function animateTiles(zeroId, otherId, direction, goalBoard){
     const zeroBox = document.getElementById(`animatebox${zeroId}`);
     const otherBox = document.getElementById(`animatebox${otherId}`)
     console.log(zeroId, otherId)
     let pos = 0;
     const id = setInterval(frame, 10);
+    
+    
     zeroBox.setAttribute('id',`animatebox${otherId}`)
     otherBox.setAttribute('id', `animatebox${zeroId}`)
+
+    const otherRow = Math.floor(zeroId/3)
+    const otherCol = zeroId % 3
+    const zeroRow = Math.floor(otherId / 3)
+    const zeroCol = otherId % 3;
+
+    const otherVal = parseInt(otherBox.firstChild.nodeValue)
+    if (goalBoard [otherRow][otherCol] === otherVal){
+        otherBox.style.backgroundColor = '#b3e6b3'
+    }
+    else{
+        otherBox.style.backgroundColor = '#ffb3b3'
+    }
+    if (goalBoard [zeroRow][zeroCol] === 0){
+        zeroBox.style.backgroundColor = '#b3e6b3'
+    }
+    else{
+        zeroBox.style.backgroundColor = '#ffb3b3'
+    }
+    console.log(otherVal)
+
     return new Promise(resolve => {
         setTimeout(() => {
           resolve('resolved');
@@ -211,11 +234,11 @@ async function animateTiles(zeroId, otherId, direction){
     }
 }
 
-async function animationHandler(zeroId, path) {
+async function animationHandler(zeroId, path, goalBoard) {
     const animateBtnContainer = document.querySelector('.animateBtn')
     animateBtnContainer.setAttribute('style', 'display:none');
     for (const element of path){
-        await animateTiles(zeroId, ...element)
+        await animateTiles(zeroId, ...element, goalBoard)
         zeroId = element[0]
     }
     const resetContainer = document.querySelector('.reset')
@@ -257,6 +280,7 @@ function solveClickHandler(){
 
         const result = search(initial, goal);
         const startBoard = startInfo[0]
+        const goalBoard = goalInfo[0]
         const path = fetchPathCoords(startInfo[1], result[0].path)
         const animateBoard = document.querySelector('.animateBoard');
         document.querySelector('.animate').setAttribute('style', 'display:inline')
@@ -268,6 +292,13 @@ function solveClickHandler(){
             const containerVal = document.createTextNode(startBoard[rowVal][colVal]);
             const container = document.querySelector(`#animatebox${i}`)
             container.setAttribute('style', `top:${rowVal * 100}px;left:${(colVal * 100)}px`)
+
+            if (startBoard[rowVal][colVal] === goalBoard[rowVal][colVal]){
+                container.style.backgroundColor = '#b3e6b3'
+            }
+            else {
+                container.style.backgroundColor = '#ffb3b3'
+            }
             container.appendChild(containerVal)
         }
         
@@ -281,7 +312,7 @@ function solveClickHandler(){
         
         const [startR, startC] = [...startInfo[1]]
         let zeroId = startR * 3 + startC;
-        animateButton.addEventListener('click', () => animationHandler(zeroId, path));
+        animateButton.addEventListener('click', () => animationHandler(zeroId, path, goalBoard));
     }
 }
 
