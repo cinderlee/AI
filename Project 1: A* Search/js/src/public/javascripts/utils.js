@@ -1,5 +1,7 @@
 export const sideVal = 100;
 export const borderVal = 1;
+export const matchColor = '#b3e6b3';
+export const mismatchColor = '#ffb3b3';
 
 export function hide(element){
     element.style.display = 'none';
@@ -19,4 +21,21 @@ export function deepCopy(board){
         copy.push(copyRow);
     }
     return copy;
+}
+
+export function createNodeElement(type, attributes, styles=null){
+    const node = document.createElement(type)
+    for (const name in attributes){
+        if (attributes.hasOwnProperty(name)){
+            node.setAttribute(name, attributes[name])
+        }
+    }
+    if (styles){
+        for (const name in styles){
+            if (styles.hasOwnProperty(name)){
+                node.style.setProperty(name, styles[name])
+            }
+        }
+    }
+    return node; 
 }

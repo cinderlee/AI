@@ -1,4 +1,4 @@
-import { sideVal, borderVal } from './utils.js';
+import { sideVal, borderVal, matchColor, mismatchColor } from './utils.js';
 
 function changeColors(zeroId, otherId, goalBoard){
     const otherRow = Math.floor(zeroId/3)
@@ -6,24 +6,26 @@ function changeColors(zeroId, otherId, goalBoard){
     const zeroRow = Math.floor(otherId / 3)
     const zeroCol = otherId % 3;
 
-    const zeroBox = document.getElementById(`animatebox${zeroId}`);
-    const otherBox = document.getElementById(`animatebox${otherId}`)
+    const zeroBox = document.getElementById(`animateCard${zeroId}`);
+    const otherBox = document.getElementById(`animateCard${otherId}`)
 
     const otherVal = parseInt(otherBox.firstChild.nodeValue)
 
     if (goalBoard [otherRow][otherCol] === otherVal){
-        otherBox.style.backgroundColor = '#b3e6b3'
+        otherBox.style.backgroundColor = matchColor;
     } else{
-        otherBox.style.backgroundColor = '#ffb3b3'
+        otherBox.style.backgroundColor = mismatchColor;
     }
 
     if (goalBoard [zeroRow][zeroCol] === 0){
-        zeroBox.style.backgroundColor = '#b3e6b3'
+        zeroBox.style.backgroundColor = matchColor;
     } else{
-        zeroBox.style.backgroundColor = '#ffb3b3'
+        zeroBox.style.backgroundColor = mismatchColor;
     }
-    zeroBox.setAttribute('id',`animatebox${otherId}`)
-    otherBox.setAttribute('id', `animatebox${zeroId}`)
+    zeroBox.setAttribute('id',`animateCard${otherId}`)
+    otherBox.setAttribute('id', `animateCard${zeroId}`)
+    zeroBox.parentNode.setAttribute('id',`animatebox${otherId}`)
+    otherBox.parentNode.setAttribute('id', `animatebox${zeroId}`)
 }
 
 export async function animateTiles(zeroId, otherId, direction, goalBoard){

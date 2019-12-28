@@ -1,7 +1,7 @@
 import Heap from './heap.js';
 import TileBoard from './tileBoard.js';
 import { animateTiles } from './animation.js';
-import { deepCopy, hide, show, sideVal, borderVal } from './utils.js';
+import { deepCopy, hide, show, sideVal, borderVal, matchColor, mismatchColor, createNodeElement } from './utils.js';
 
 const cardNum = 9; 
 const col = 3;
@@ -119,11 +119,11 @@ function createInputBoard(boardType, boardDiv){
         if (count % col === 0 && count !== 0){
             boardDiv.appendChild(document.createElement("br"));
         }
-        const cardBox = document.createElement("div");
-        cardBox.setAttribute('id', `${boardType}box${count}`);
-        const inputBox = document.createElement("input");
-        inputBox.setAttribute('type', 'text');
-        inputBox.setAttribute('id', `${boardType}Input${count}`)
+        const cardBox = createNodeElement('div', {'id': `${boardType}box${count}`});
+        const inputBox = createNodeElement('input', {
+            'type': 'text', 
+            'id': `${boardType}Input${count}`
+        })
         cardBox.appendChild(inputBox);
         boardDiv.append(cardBox)
     }
@@ -134,21 +134,19 @@ function createAnimateBoard(boardDiv, startBoard, goalBoard){
         if (count % col === 0 && count !== 0){
             boardDiv.appendChild(document.createElement("br"));
         }
-        const cardBox = document.createElement("div");
-        cardBox.setAttribute('id', `animatebox${count}`);
-        
         let rowVal = Math.floor(count / 3)
         let colVal = count % 3
+        const divColor = startBoard[rowVal][colVal] === goalBoard[rowVal][colVal] ? matchColor : mismatchColor
+        const cardBox = createNodeElement('div', {'id': `animatebox${count}`, 'class': 'animateBox'}, {
+            'top':`${rowVal * (sideVal + 2 * borderVal)}px`,
+            'left':`${(colVal * (sideVal + 2 * borderVal))}px`,
+            // 'background-color': divColor
+        })
+        const card = createNodeElement('div', {'id': `animateCard${count}`, 'class': 'animateCard'}, {'background-color': divColor})
         const containerVal = document.createTextNode(startBoard[rowVal][colVal]);
-        cardBox.setAttribute('style', `top:${rowVal * (sideVal + 2 * borderVal)}px;left:${(colVal * (sideVal + 2 * borderVal))}px`)
 
-        if (startBoard[rowVal][colVal] === goalBoard[rowVal][colVal]){
-            cardBox.style.backgroundColor = '#b3e6b3'
-        }
-        else {
-            cardBox.style.backgroundColor = '#ffb3b3'
-        }
-        cardBox.appendChild(containerVal)
+        card.appendChild(containerVal)
+        cardBox.append(card)
         boardDiv.append(cardBox)
     }
 }
@@ -157,12 +155,21 @@ function fetchBoardValues(boardType){
     const boardVals = [];
     let row = [];
     let zeroPos;
+    const log = []
     for (let count = 0; count < cardNum; count++){
         const inputCard = document.querySelector(`#${boardType}Input${count}`)
         if (inputCard.value.trim() === ''){
-            return 'Empty cell detected.'
+            return ['error', 'Empty cell detected.']
         }
-        row.push(parseInt(inputCard.value))
+        const numVal = parseInt(inputCard.value);
+        if (isNaN(numVal)){
+            return ['error', 'Board contains a non-number value.']
+        }
+        if (log.includes(numVal)){
+            return ['error', 'Repeated value detected.']
+        }
+        log.push(numVal)
+        row.push(numVal)
         if (row[row.length - 1] === 0){
             const r = boardVals.length;
             const c = count % col;
@@ -173,7 +180,27 @@ function fetchBoardValues(boardType){
             row = []
         }
     }
+    if (!log.includes(0)){
+        return ['error', 'Blank space (0) not detected.']
+    }
     return [boardVals, zeroPos];
+}
+
+function checkStartGoalVals(startBoard, goalBoard){
+    const boardVals = []
+    for (const arr of startBoard){
+        boardVals.push(...arr)
+    }
+
+    for (const goalArr of goalBoard){
+        for (const goalVal of goalArr){
+            if (!boardVals.includes(goalVal)){
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 async function animationHandler(zeroId, path, goalBoard) {
@@ -206,38 +233,52 @@ function fetchPathCoords(startCoord, directions){
     return path;
 }
 
-function solveClickHandler(){
+function clearErrorContainer(){
     const errorDiv = document.querySelector('.error-message');
-    let startInfo = fetchBoardValues('start')
-    let goalInfo = fetchBoardValues('goal');
-    if (startInfo[0] === 'Empty cell detected.' || goalInfo[0] === 'Empty cell detected.'){
-        errorDiv.setAttribute('style', 'display:block');
+    if (errorDiv.firstChild){
+        errorDiv.removeChild(errorDiv.firstChild)
+    }
+}
+
+function displayError(message){
+    const errorDiv = document.querySelector('.error-message');
+    show(errorDiv);
+    const errorContent = document.createTextNode(message);
+    errorDiv.appendChild(errorContent);
+}
+
+function solveClickHandler(){
+    clearErrorContainer();
+    const [startBoard, startPos] = [...fetchBoardValues('start')];
+    const [goalBoard, goalPos] = [...fetchBoardValues('goal')]
+    if (startBoard === 'error' || goalBoard === 'error'){
+        const errorMessage = startBoard === 'error' ? startPos : goalPos
+        displayError(errorMessage);
+    } else if (!checkStartGoalVals(startBoard, goalBoard)){
+        displayError('Values in start and goal boards do not match.')
     }
     else{
-        hide(errorDiv)
+        hide(document.querySelector('.error-message'))
 
-        const initial = new TileBoard(...startInfo);
-        const goal = new TileBoard(...goalInfo);
+        const initial = new TileBoard(startBoard, startPos);
+        const goal = new TileBoard(goalBoard, goalPos);
         initial.fn = initial.heuristic(goal);
 
         const result = search(initial, goal);
-        const startBoard = startInfo[0]
-        const goalBoard = goalInfo[0]
-        const path = fetchPathCoords(startInfo[1], result[0].path)
+        const path = fetchPathCoords(startPos, result[0].path)
         const animateBoard = document.querySelector('.animateBoard');
         show(document.querySelector('.animate'))
         hide(document.querySelector('.start'))
         createAnimateBoard(animateBoard, startBoard, goalBoard)
         
-        const animateButton = document.createElement('button')
-        animateButton.setAttribute('class', 'animate-btn')
+        const animateButton = createNodeElement('button', {'class': 'animate-btn'})
         const animateText = document.createTextNode('Animate!')
         animateButton.appendChild(animateText)
 
         const animateBtnContainer = document.querySelector('.animateBtn')
         animateBtnContainer.appendChild(animateButton)
         
-        const [startR, startC] = [...startInfo[1]]
+        const [startR, startC] = [...startPos]
         let zeroId = startR * 3 + startC;
         animateButton.addEventListener('click', () => animationHandler(zeroId, path, goalBoard));
     }
